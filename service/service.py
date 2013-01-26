@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 from bottle import Bottle, run, request, response, debug, static_file, template
 from pymongo import MongoClient
+from datetime import datetime
 from ConfigParser import ConfigParser
 import os
 import json
+import time
 import bleach
 
 app = Bottle()
@@ -28,6 +30,7 @@ def update_temp():
         if device is None:
             device = {'name': name}
         device['temp'] = temp
+        device['time'] = int(time.time())
         devices.save(device)
     return temp_info(name)
 
@@ -35,6 +38,13 @@ def update_temp():
 @app.get('/')
 def index():
     return template('homepage', devices=list(devices.find({})))
+
+
+@app.get('/show/<name>')
+def show_info(name):
+    device = devices.find_one({'name': name})
+    device['time'] = datetime.fromtimestamp(int(device['time'])).ctime()
+    return template('device', device=device)
 
 
 @app.get('/devices')
