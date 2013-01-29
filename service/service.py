@@ -16,8 +16,17 @@ devices = db.devices
 
 @app.get('/static/<path:path>')
 def statics(path):
-    print path
     return static_file(path, root='static')
+
+
+@app.get('/apple-touch-icon.png')
+def app_icon():
+    return static_file('apple-touch-icon.png', root='static')
+
+
+@app.get('/favicon.ico')
+def favicon():
+    return static_file('favicon.ico', root='static')
 
 
 @app.post('/update')
